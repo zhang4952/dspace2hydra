@@ -20,22 +20,21 @@ module Mapping
       collections = collection_csv
       academic_units = academic_units_hash
 
-      affiliation_name = find_department_or_college_affiliation(collections, item_detail[:owner_id])
       other_affiliation_uri = find_other_affiliation(collections, item_detail[:owner_id], other_affiliations_csv)
-      if affiliation_name
-        found_academic_units = find_academic_units(academic_units, affiliation_name)
-      end
 
+      affiliation_name = find_department_or_college_affiliation(collections, item_detail[:owner_id])
+      found_academic_units = find_academic_units(academic_units, affiliation_name) if affiliation_name
+
+      # IF ETD, check the etds for the academic units uri
       if item_detail[:work_type].casecmp('etd').zero? && found_academic_units.nil?
         graduation_year = graduation_date(item_detail[:metadata])
-        # IF ETD, check the etds for the academic unit uri
         handle = handle_uri(item_detail[:metadata])
         etd = etd_csv.find { |e| e['dc.identifier.uri'].casecmp(handle).zero? }
         return nil if etd['Department'].nil? && etd['College'].nil?
         label = etd['Department'].nil? ? etd['College'] : etd['Department']
         found_academic_units = find_academic_units(academic_units, label, graduation_year)
       end
-      found_academic_units.flatten!
+
       [
         { field_name: 'other_affiliation', value: other_affiliation_uri },
         { field_name: 'acedemic_affiliation', value: found_academic_units }
