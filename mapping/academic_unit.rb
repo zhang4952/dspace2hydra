@@ -102,15 +102,17 @@ module Mapping
     end
 
     def self.select_academic_units_having_date_range(academic_units, date)
+      date = ::Date.new(date.to_i, 12, 31) unless date.is_a? Date
       academic_units.select do |a|
         found = a.dig('dc:date')
+        found = found.dig('@value') if found.is_a? Hash
         return false if found.nil?
+        found = found.join(',') if found.is_a? Array
         dates = found.split(',')
         dates.keep_if do |d|
           from, to = d.split('/')
-          to = to.casecmp('open').zero? ? ::DateTime.now.to_date : ::Date.new(to, 1, 1)
+          to = to.casecmp('open').zero? ? ::DateTime.now.to_date : ::Date.new(to.to_i, 12, 31)
           from = ::Date.new(from.to_i, 1, 1)
-          date = ::Date.new(date.to_i, 12, 31)
           date >= from && date <= to
         end
         dates.count > 0
