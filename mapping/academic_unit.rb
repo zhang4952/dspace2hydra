@@ -26,26 +26,25 @@ module Mapping
       found_academic_units = find_academic_units(academic_units, affiliation_name) if affiliation_name
 
       # IF ETD, check the etds for the academic units uri
-      if item_detail[:work_type].casecmp('etd').zero? && found_academic_units.nil?
+      if item_detail[:work_type].casecmp('graduate_thesis_or_dissertation').zero? && found_academic_units.nil?
         graduation_year = graduation_date(item_detail[:metadata])
-        handle = handle_uri(item_detail[:metadata])
-        etd = etd_csv.find { |e| e['dc.identifier.uri'].casecmp(handle).zero? }
-        return nil if etd['Department'].nil? && etd['College'].nil?
-        label = etd['Department'].nil? ? etd['College'] : etd['Department']
-        found_academic_units = find_academic_units(academic_units, label, graduation_year)
+        degree_name = degree_name(item_detail[:metadata])
+        etd = etd_csv.find { |e| e['Degree Name'].to_s.casecmp(degree_name).zero? && e['Grad Year'].to_s.casecmp(graduation_year).zero? }
+        found_academic_units = etd['Final URI'].to_s.gsub(/\s/,'').split(';')
       end
 
       [
         { field_name: 'other_affiliation', value: other_affiliation_uri },
-        { field_name: 'acedemic_affiliation', value: found_academic_units }
+        { field_name: 'academic_affiliation', value: found_academic_units }
       ]
     end
 
     private
 
-    def self.handle_uri(metadata)
-      handle_node = metadata['identifier'].find { |n| n.qualifier.qualifier.casecmp('uri').zero? }
-      handle = handle_node.qualifier.run_method
+    def self.degree_name(metadata)
+      degree_node = metadata['degree'].find { |n| n.qualifier.qualifier.casecmp('name').zero? }
+      degree_name = degree_node.qualifier.run_method.find { |fields| fields[:field_name].casecmp('degree_field').zero? }
+      degree_name[:value]
     end
 
     def self.graduation_date(metadata)

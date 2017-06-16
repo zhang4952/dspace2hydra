@@ -53,6 +53,13 @@ value_from_node_property: ''
 
 # Custom metadata nodes to add to the data payload posted to the server
 custom_nodes:
+  academic_unit:
+    field:
+      name: academic_affiliation
+      property: "%{work_type}.%{field_name}"
+      type: Array
+    method: Mapping::AcademicUnit.get_uris
+    value_from_node_property: item_detail
   admin_set:
     field:
       name: admin_set_id
@@ -101,7 +108,7 @@ custom_nodes:
       property: "%{work_type}.%{field_name}"
       type: String
     method: Mapping::Visibility.unprocessed
-    value: open   
+    value: open
 
 # Migration metadata nodes extract data from the DSpace Item metadata.xml and do some
 # lookup/cleanup/mapping before posting to the server.
@@ -301,7 +308,7 @@ migration_nodes:
       reportsandpublications:
         field:
           name: in_series
-          method: Mapping::Relation.ignored        
+          method: Mapping::Relation.ignored
   rights:
     field:
       name: rights

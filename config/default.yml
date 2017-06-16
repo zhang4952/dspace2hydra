@@ -55,7 +55,7 @@ value_from_node_property: ''
 custom_nodes:
   academic_unit:
     field:
-      name: academic_unit
+      name: academic_affiliation
       property: "%{work_type}.%{field_name}"
       type: Array
     method: Mapping::AcademicUnit.get_uris
@@ -386,4 +386,4 @@ migration_nodes:
           name: hydrologicUnitCode
       spatialhydrologicnorthlahontan:
         field:
-          name: hydrologicUnitCode                
+          name: hydrologicUnitCode
