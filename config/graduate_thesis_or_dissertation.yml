@@ -212,7 +212,7 @@ migration_nodes:
     field:
       name: degree_name
       property: "%{work_type}.%{field_name}"
-      type: Array
+      type: String
     xpath: //metadata/value[@element='degree']
     method: Mapping::Degree.unprocessed
     qualifiers:
@@ -246,6 +246,7 @@ migration_nodes:
       default:
         field:
           name: description
+          type: String
         method:
           - Mapping::Description.process_if_grad_date
           - graduation_year

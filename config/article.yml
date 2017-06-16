@@ -138,7 +138,7 @@ migration_nodes:
       default:
         field:
           name: not_include
-       author:
+      author:
         field:
           name: not_include
   date:
